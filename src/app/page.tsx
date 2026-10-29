@@ -10,7 +10,7 @@ import { FilterControls } from '@/components/FilterControls';
 import { SankeyDiagram } from '@/components/SankeyDiagram';
 import { DetailsPanel } from '@/components/DetailsPanel';
 import { SingleSurveyFlow } from '@/components/SingleSurveyFlow';
-import { Maximize2, Minimize2, Workflow, HelpCircle, Loader2 } from 'lucide-react';
+import { Maximize2, Minimize2, HelpCircle, Loader2 } from 'lucide-react';
 
 export default function Home() {
   const [dataset, setDataset] = useState<SankeyDataset>(SAMPLE_DATASET_ONS);
@@ -150,31 +150,33 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Application Header */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-40">
+    <div className="min-h-screen bg-[#F5F5F5] text-[#222222] flex flex-col font-sans">
+      {/* Official ONS Header in Night Blue (#003C57) */}
+      <header className="bg-[#003C57] text-white shadow-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <Workflow className="w-5 h-5 text-white" />
+            {/* ONS Crest Logo Emblem */}
+            <div className="w-9 h-9 rounded-md bg-[#206095] border border-[#27A0CC] flex items-center justify-center font-bold text-white text-base shadow-sm">
+              ONS
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-white tracking-tight">
-                  ONS Survey Ecosystem
-                </h1>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                  GSBPM Architecture
+                <span className="text-base font-bold text-white tracking-tight">
+                  Office for National Statistics
+                </span>
+                <span className="text-[#27A0CC] font-normal hidden sm:inline">|</span>
+                <span className="text-sm font-semibold text-[#27A0CC] hidden sm:inline">
+                  Survey Ecosystem
                 </span>
                 {isLoadingDefault && (
-                  <span className="flex items-center gap-1 text-[11px] text-indigo-400">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Loading default dataset...</span>
+                  <span className="flex items-center gap-1.5 text-xs text-[#27A0CC] ml-2">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Loading...</span>
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400 hidden sm:block">
-                Modeling ONS statistical surveys and platforms across GSBPM process phases
+              <p className="text-xs text-[#BCDCF0] hidden md:block">
+                Generic Statistical Business Process Model (GSBPM) Platform Visualizer
               </p>
             </div>
           </div>
@@ -183,36 +185,36 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setShowHelp(!showHelp)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/80 bg-slate-800/80 text-xs text-slate-300 hover:text-white hover:bg-slate-700 transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#27A0CC] bg-[#003C57] hover:bg-[#206095] text-xs font-semibold text-white transition"
             >
-              <HelpCircle className="w-4 h-4 text-cyan-400" />
-              <span className="hidden sm:inline">GSBPM Guide</span>
+              <HelpCircle className="w-4 h-4 text-[#27A0CC]" />
+              <span>User Guide</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Guide Dropdown Modal */}
+      {/* Guide Dropdown Modal with ONS Information Styling */}
       {showHelp && (
-        <div className="bg-slate-900 border-b border-slate-800 px-4 py-4 animate-in slide-in-from-top-2 duration-150">
-          <div className="max-w-7xl mx-auto text-xs text-slate-300 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
-              <span className="font-semibold text-white block mb-1">1. Default Business Survey Platforms</span>
-              The app automatically loads <code className="text-indigo-300">Business Survey Platforms.csv</code> on startup. You can upload an updated version anytime above.
+        <div className="bg-[#EBF2F7] border-b-2 border-[#206095] px-4 py-4 animate-in slide-in-from-top-2 duration-150">
+          <div className="max-w-7xl mx-auto text-xs text-[#222222] grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-3.5 bg-white rounded-md border border-[#D0D2D3] shadow-xs">
+              <span className="font-bold text-[#003C57] block mb-1">1. Default Business Survey Platforms</span>
+              The application automatically loads <code className="text-[#206095] font-bold">Business Survey Platforms.csv</code> on startup. You can upload an updated spreadsheet at any time.
             </div>
-            <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
-              <span className="font-semibold text-white block mb-1">2. All Surveys Sankey Diagram</span>
-              The central diagram aggregates all surveys, showing how flows branch and converge across ONS platforms in each GSBPM phase.
+            <div className="p-3.5 bg-white rounded-md border border-[#D0D2D3] shadow-xs">
+              <span className="font-bold text-[#003C57] block mb-1">2. All Surveys Sankey Diagram</span>
+              The central diagram aggregates all surveys, showing how statistical operations branch and converge across ONS platforms in each GSBPM phase.
             </div>
-            <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
-              <span className="font-semibold text-white block mb-1">3. Single Survey Process Flow (Below)</span>
-              The panel at the bottom isolates any chosen survey from the dropdown, displaying its step-by-step platforms across all 8 GSBPM phases.
+            <div className="p-3.5 bg-white rounded-md border border-[#D0D2D3] shadow-xs">
+              <span className="font-bold text-[#003C57] block mb-1">3. Single Survey Process Flow</span>
+              The component at the bottom isolates any chosen survey from the dropdown, displaying its step-by-step platforms across all 8 GSBPM phases.
             </div>
           </div>
         </div>
       )}
 
-      {/* Main Container */}
+      {/* Main Content Shell */}
       <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6 flex-1">
         {/* Above Diagram: File Ingestion & Data Management */}
         <section aria-label="Spreadsheet Upload">
@@ -246,13 +248,13 @@ export default function Home() {
         <section
           aria-label="Focal GSBPM Sankey Diagram"
           className={`flex flex-col transition-all duration-300 ${
-            isExpanded ? 'fixed inset-4 z-50 bg-slate-950 p-4 rounded-2xl shadow-2xl border border-slate-800' : 'relative'
+            isExpanded ? 'fixed inset-4 z-50 bg-[#F5F5F5] p-4 rounded-xl shadow-2xl border-2 border-[#003C57]' : 'relative'
           }`}
         >
           {/* Viewport Control Bar */}
-          <div className="flex items-center justify-between pb-2 text-xs text-slate-400">
+          <div className="flex items-center justify-between pb-2 text-xs text-[#595959]">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-slate-200">
+              <span className="font-bold text-[#003C57] text-sm">
                 ONS Survey Portfolio: {allSurveys.length} Surveys across GSBPM Process Stages
               </span>
             </div>
@@ -260,17 +262,17 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-[#D0D2D3] hover:border-[#206095] text-[#206095] hover:text-[#003C57] font-semibold transition"
               title={isExpanded ? 'Restore view' : 'Maximize diagram'}
             >
               {isExpanded ? (
                 <>
-                  <Minimize2 className="w-3.5 h-3.5 text-indigo-400" />
+                  <Minimize2 className="w-3.5 h-3.5 text-[#206095]" />
                   <span>Exit Fullscreen</span>
                 </>
               ) : (
                 <>
-                  <Maximize2 className="w-3.5 h-3.5 text-indigo-400" />
+                  <Maximize2 className="w-3.5 h-3.5 text-[#206095]" />
                   <span>Expand Viewport</span>
                 </>
               )}
@@ -314,10 +316,20 @@ export default function Home() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-4 mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500">
-          ONS Ecosystem GSBPM Process Visualizer • Generic Statistical Business Process Model
+      {/* Official ONS Design System Footer */}
+      <footer className="border-t border-[#D0D2D3] bg-white py-6 mt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#595959] gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded bg-[#003C57] text-white flex items-center justify-center font-bold text-[10px]">
+              ONS
+            </div>
+            <span className="font-semibold text-[#003C57]">
+              Office for National Statistics
+            </span>
+          </div>
+          <div>
+            Built with the ONS Design System • Generic Statistical Business Process Model (GSBPM)
+          </div>
         </div>
       </footer>
     </div>

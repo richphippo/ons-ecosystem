@@ -38,35 +38,35 @@ export const SingleSurveyFlow: React.FC<SingleSurveyFlowProps> = ({
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+    <div className="bg-white border border-[#D0D2D3] rounded-lg p-5 shadow-sm space-y-4 text-[#222222]">
       {/* Component Header with Dropdown & Navigation */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pb-4 border-b border-[#D0D2D3]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-1 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="p-1 rounded bg-[#EBF2F7] text-[#206095] border border-[#BCDCF0]">
               <Compass className="w-4 h-4" />
             </span>
-            <h2 className="text-sm font-bold uppercase tracking-wider text-indigo-300">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#206095]">
               Single Survey Process Flow
             </h2>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-[#595959] font-medium">
               ({activeIndex + 1} of {surveys.length} surveys)
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-1">
-            <h3 className="text-base font-bold text-white">{currentSurvey.name}</h3>
+            <h3 className="text-lg font-bold text-[#003C57]">{currentSurvey.name}</h3>
             {currentSurvey.metadata?.Divison && (
-              <span className="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded-full border border-slate-700">
+              <span className="bg-[#EBF2F7] text-[#003C57] text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#BCDCF0]">
                 {currentSurvey.metadata.Divison}
               </span>
             )}
             {currentSurvey.metadata?.Division && (
-              <span className="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded-full border border-slate-700">
+              <span className="bg-[#EBF2F7] text-[#003C57] text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#BCDCF0]">
                 {currentSurvey.metadata.Division}
               </span>
             )}
             {currentSurvey.metadata?.Frequency && (
-              <span className="bg-emerald-950/60 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full border border-emerald-800 font-mono">
+              <span className="bg-[#F0FDF4] text-[#0F8243] text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-[#BBF7D0] font-mono">
                 {currentSurvey.metadata.Frequency}
               </span>
             )}
@@ -75,15 +75,15 @@ export const SingleSurveyFlow: React.FC<SingleSurveyFlowProps> = ({
 
         {/* Survey Selector Controls */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5">
-            <Users className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+          <div className="flex items-center gap-2 bg-[#F8F9FA] border border-[#707071] rounded-md px-3 py-1.5 focus-within:border-black">
+            <Users className="w-3.5 h-3.5 text-[#206095] shrink-0" />
             <select
               value={currentSurvey.id}
               onChange={e => onSelectSurvey(e.target.value)}
-              className="bg-transparent text-xs font-semibold text-slate-200 focus:outline-none cursor-pointer max-w-[220px] sm:max-w-[280px] truncate"
+              className="bg-transparent text-xs font-bold text-[#003C57] focus:outline-none cursor-pointer max-w-[220px] sm:max-w-[280px] truncate"
             >
               {surveys.map(s => (
-                <option key={s.id} value={s.id} className="bg-slate-900 text-slate-200">
+                <option key={s.id} value={s.id} className="bg-white text-[#222222]">
                   {s.name}
                 </option>
               ))}
@@ -96,7 +96,7 @@ export const SingleSurveyFlow: React.FC<SingleSurveyFlowProps> = ({
               type="button"
               onClick={handlePrev}
               title="Previous survey"
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition"
+              className="p-1.5 rounded-md bg-white hover:bg-[#F0F4F7] border border-[#BCBCBD] text-[#206095] transition"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -104,7 +104,7 @@ export const SingleSurveyFlow: React.FC<SingleSurveyFlowProps> = ({
               type="button"
               onClick={handleNext}
               title="Next survey"
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition"
+              className="p-1.5 rounded-md bg-white hover:bg-[#F0F4F7] border border-[#BCBCBD] text-[#206095] transition"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -116,45 +116,45 @@ export const SingleSurveyFlow: React.FC<SingleSurveyFlowProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2.5">
         {GSBPM_STAGES.map((stageName, idx) => {
           const platformUsed = currentSurvey.stages[stageName];
-          const stageColor = STAGE_COLOR_MAP[stageName] || '#6366f1';
+          const stageColor = STAGE_COLOR_MAP[stageName] || '#206095';
 
           return (
             <div
               key={stageName}
-              className={`p-3 rounded-xl border flex flex-col justify-between transition-all ${
+              className={`p-3 rounded-md border flex flex-col justify-between transition-all ${
                 platformUsed
-                  ? 'bg-slate-950/90 border-slate-800/90 shadow-md hover:border-slate-700'
-                  : 'bg-slate-950/40 border-slate-900/60 opacity-50'
+                  ? 'bg-white border-[#D0D2D3] shadow-xs hover:border-[#206095]'
+                  : 'bg-[#F5F5F5] border-[#E8EDEE] opacity-60'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span
-                    className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-sm"
+                    className="text-[10px] font-bold px-2 py-0.5 rounded text-white shadow-xs"
                     style={{ backgroundColor: stageColor }}
                   >
                     {idx + 1}. {stageName}
                   </span>
                   {platformUsed ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#0F8243] shrink-0" />
                   ) : (
-                    <CircleDashed className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                    <CircleDashed className="w-3.5 h-3.5 text-[#BCBCBD] shrink-0" />
                   )}
                 </div>
 
-                <div className="mt-1 text-xs font-semibold text-slate-100 min-h-[40px] flex items-center">
+                <div className="mt-1 text-xs font-bold text-[#003C57] min-h-[40px] flex items-center">
                   {platformUsed ? (
                     platformUsed
                   ) : (
-                    <span className="text-slate-600 italic text-[11px]">Skipped / N/A</span>
+                    <span className="text-[#707071] italic text-[11px] font-normal">Skipped / N/A</span>
                   )}
                 </div>
               </div>
 
               {platformUsed && (
-                <div className="mt-2 pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
-                  <span>Platform</span>
-                  <span className="font-mono text-emerald-400">Active</span>
+                <div className="mt-2 pt-1.5 border-t border-[#E8EDEE] flex items-center justify-between text-[10px] text-[#595959]">
+                  <span className="font-medium">Platform</span>
+                  <span className="font-mono font-bold text-[#0F8243]">Active</span>
                 </div>
               )}
             </div>
