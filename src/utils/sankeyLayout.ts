@@ -133,14 +133,19 @@ export function computeSankeyLayout(
   }
 
   try {
+    const marginLeft = 75;
+    const marginRight = 75;
+    const marginTop = 58;
+    const marginBottom = 20;
+
     const sankeyGenerator = sankey<BaseNodeData, BaseLinkData>()
       .nodeId(d => d.id)
       .nodeAlign(sankeyJustify)
       .nodeWidth(20)
       .nodePadding(Math.max(12, Math.min(26, height / (nodes.length * 1.2))))
       .extent([
-        [24, 24],
-        [width - 24, height - 24]
+        [marginLeft, marginTop],
+        [width - marginRight, height - marginBottom]
       ]);
 
     const graph = sankeyGenerator({
