@@ -1,160 +1,59 @@
+import Papa from 'papaparse';
 import type { SankeyDataset } from '../types/sankey.ts';
-import { parseSurveyMatrix } from './dataParser.ts';
+import { parseSpreadsheetRows } from './dataParser.ts';
 
-export const SAMPLE_GSBPM_CSV = `Survey Name,Specify Needs,Design,Build,Collect,Process,Analyse,Disseminate,Evaluate,Division,Frequency
-Labour Force Survey (LFS),Jira & Confluence,Enterprise Architect,Blaise 5 Studio,Blaise CATI/CAPI,SPSS & SAS Server,R Studio & Posit,Nomis & Web Bulletins,Qualtrics Survey,Social Surveys,Monthly
-Monthly Business Survey (MBS),Jira & Confluence,Visio & Miro,EQ Authoring,Electronic Questionnaire (EQ),PySpark & DAP,SAS Analytics,Open Data API,Confluence Retrospective,Business Statistics,Monthly
-Annual Population Survey (APS),Service Design Board,Enterprise Architect,Blaise 5 Studio,Blaise CAPI,PySpark & Splink,R Studio & Posit,Nomis & Web Bulletins,Annual Review Board,Social Surveys,Annual
-Retail Sales Index (RSI),Business Change Board,Visio & Miro,EQ Authoring,Electronic Questionnaire (EQ),Python ETL Pipe,R Shiny Dashboards,Open Data API,Team Retrospective,Economic Statistics,Monthly
-Census & Demographic Model,Cabinet Office Mandate,Enterprise Architect,Custom React & Microservices,Electronic Questionnaire (EQ),Record Linkage Engine,Bayesian Model / Stan,Secure Research Service (SRS),National Statistics Quality Review,Census Directorate,Decennial
-International Passenger Survey (IPS),Border Force Consult,Visio & Miro,Custom Tablet App,Tablet CAPI Fieldwork,SAS Server,SAS Analytics,National Statistical Bulletins,Border Force Feedback,Migration & Travel,Quarterly
-Wealth and Assets Survey (WAS),Service Design Board,Blaise 5 Studio,Blaise 5 Studio,Blaise CAPI,SPSS & SAS Server,R Studio & Posit,Secure Research Service (SRS),Qualtrics Survey,Social Surveys,Biennial
-Construction Output Survey,Business Change Board,Visio & Miro,EQ Authoring,Electronic Questionnaire (EQ),Python ETL Pipe,R Shiny Dashboards,Web Bulletins & Excel,Team Retrospective,Business Statistics,Monthly
-COVID-19 Infection Survey (CIS),DHSC Urgent Directive,Rapid Prototyping,EQ Authoring,EQ & Field Couriers,PySpark & Splink,Bayesian Model / Stan,Open Data API,Health Review Council,Health & Life Events,Ad-hoc / Rapid
-Producer Price Index (PPI),Economic Strategy Board,Enterprise Architect,Oracle Forms,Electronic Questionnaire (EQ),Oracle DB & SQL,SAS Analytics,Open Data API,Economic Review Board,Prices & Inflation,Monthly`;
+export const SAMPLE_BUSINESS_SURVEYS_CSV = `Survey Name,Specify Needs,Design,Build,Collect,Process,Analyse,Disseminate,Evaluate,Divison,Frequency
+Monthly Business Survey,Word,IDBR,Author,eQ,SPP,DAP,API,R,Business Surveys,Monthly
+Quarterly Stocks,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Capital Expenditure (CAPEX),Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Retail Sales,Word,IDBR,Author,eQ,SPP,DAP,API,R,Business Surveys,Monthly
+ABS,Word,IDBR,Author,eQ,Common Software,DAP,API,R,Business Surveys,Annual
+Quarterly Sand & Gravel Land,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Excel,Business Surveys,Quarterly
+Monthly Blocks,Word,IDBR,Paper,Paper,Common Software,CORD,ONS Website,Excel,Business Surveys,Monthly
+Monthly Bricks,Word,IDBR,Paper,Paper,Common Software,CORD,ONS Website,Excel,Business Surveys,Monthly
+Quarterly Sand & Gravel Marine,Word,IDBR,Paper,Paper,Common Software,CORD,ONS Website,Excel,Business Surveys,Quarterly
+Monthly Wages and Salaries,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Excel,Business Surveys,Monthly
+Quarterly Business Survey,Word,IDBR,Author,eQ,SPP,DAP,API,Python,Business Surveys,Quarterly
+Annual Survey of Hours and Earnings,Word,IDBR,Author,SEFT,SPP,DAP,ONS Website,Excel,Business Surveys,Annual
+Local Authority,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Public Bodies,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Civil Service,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Annual Business Spend,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Annual
+Vacancies Inquiry,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Monthly
+Construction,Word,IDBR,Author,eQ,SPP,DAP,ONS Website,Excel,Business Surveys,Monthly
+BERD,Word,IDBR,Author,eQ,SPP,DAP,API,Python,Business Surveys,Annual
+GERD,Word,IDBR,Author,eQ,FIS,DAP,ONS Website,Excel,Business Surveys,Annual
+Digital Economy Survey,Word,IDBR,Paper,Paper,FIS,DAP,ONS Website,Excel,Business Surveys,Annual
+FALS,Word,IDBR,Paper,Paper,FIS,SAS,ONS Website,Excel,Business Surveys,Annual
+FI,Word,IDBR,Paper,Paper,FIS,SAS,ONS Website,Excel,Business Surveys,Annual
+Quarterly Profits,Word,IDBR,Paper,Paper,FIS,SAS,ONS Website,Excel,Business Surveys,Quarterly
+Foreign Direct Investment,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Quarterly
+Mergers & Acquisitions,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Annual
+Outward Foreign Affiliates Statistics,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Annual
+International Trade in Services,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Annual
+Financial Services Survey,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Quarterly
+Purchases,Word,IDBR,Author,eQ,Cora,DAP,ONS Website,Excel,Business Surveys,Annual
+Services Turnover Survey,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Excel,Business Surveys,Biannual
+Private Non-profit,Word,IDBR,Paper,Paper,Cora,Python,ONS Website,Excel,Business Surveys,Annual
+UK Innovation Survey,Word,IDBR,Paper,Paper,Cora,Python,ONS Website,Excel,Business Surveys,Biannual
+Management and Expectations Survey,Word,IDBR,Paper,Paper,Cora,Python,ONS Website,Excel,Business Surveys,Annual`;
 
-const parsedSample = parseSurveyMatrix(
-  [
-    {
-      'Survey Name': 'Labour Force Survey (LFS)',
-      'Specify Needs': 'Jira & Confluence',
-      'Design': 'Enterprise Architect',
-      'Build': 'Blaise 5 Studio',
-      'Collect': 'Blaise CATI/CAPI',
-      'Process': 'SPSS & SAS Server',
-      'Analyse': 'R Studio & Posit',
-      'Disseminate': 'Nomis & Web Bulletins',
-      'Evaluate': 'Qualtrics Survey',
-      'Division': 'Social Surveys',
-      'Frequency': 'Monthly'
-    },
-    {
-      'Survey Name': 'Monthly Business Survey (MBS)',
-      'Specify Needs': 'Jira & Confluence',
-      'Design': 'Visio & Miro',
-      'Build': 'EQ Authoring',
-      'Collect': 'Electronic Questionnaire (EQ)',
-      'Process': 'PySpark & DAP',
-      'Analyse': 'SAS Analytics',
-      'Disseminate': 'Open Data API',
-      'Evaluate': 'Confluence Retrospective',
-      'Division': 'Business Statistics',
-      'Frequency': 'Monthly'
-    },
-    {
-      'Survey Name': 'Annual Population Survey (APS)',
-      'Specify Needs': 'Service Design Board',
-      'Design': 'Enterprise Architect',
-      'Build': 'Blaise 5 Studio',
-      'Collect': 'Blaise CAPI',
-      'Process': 'PySpark & Splink',
-      'Analyse': 'R Studio & Posit',
-      'Disseminate': 'Nomis & Web Bulletins',
-      'Evaluate': 'Annual Review Board',
-      'Division': 'Social Surveys',
-      'Frequency': 'Annual'
-    },
-    {
-      'Survey Name': 'Retail Sales Index (RSI)',
-      'Specify Needs': 'Business Change Board',
-      'Design': 'Visio & Miro',
-      'Build': 'EQ Authoring',
-      'Collect': 'Electronic Questionnaire (EQ)',
-      'Process': 'Python ETL Pipe',
-      'Analyse': 'R Shiny Dashboards',
-      'Disseminate': 'Open Data API',
-      'Evaluate': 'Team Retrospective',
-      'Division': 'Economic Statistics',
-      'Frequency': 'Monthly'
-    },
-    {
-      'Survey Name': 'Census & Demographic Model',
-      'Specify Needs': 'Cabinet Office Mandate',
-      'Design': 'Enterprise Architect',
-      'Build': 'Custom React & Microservices',
-      'Collect': 'Electronic Questionnaire (EQ)',
-      'Process': 'Record Linkage Engine',
-      'Analyse': 'Bayesian Model / Stan',
-      'Disseminate': 'Secure Research Service (SRS)',
-      'Evaluate': 'National Statistics Quality Review',
-      'Division': 'Census Directorate',
-      'Frequency': 'Decennial'
-    },
-    {
-      'Survey Name': 'International Passenger Survey (IPS)',
-      'Specify Needs': 'Border Force Consult',
-      'Design': 'Visio & Miro',
-      'Build': 'Custom Tablet App',
-      'Collect': 'Tablet CAPI Fieldwork',
-      'Process': 'SAS Server',
-      'Analyse': 'SAS Analytics',
-      'Disseminate': 'National Statistical Bulletins',
-      'Evaluate': 'Border Force Feedback',
-      'Division': 'Migration & Travel',
-      'Frequency': 'Quarterly'
-    },
-    {
-      'Survey Name': 'Wealth and Assets Survey (WAS)',
-      'Specify Needs': 'Service Design Board',
-      'Design': 'Blaise 5 Studio',
-      'Build': 'Blaise 5 Studio',
-      'Collect': 'Blaise CAPI',
-      'Process': 'SPSS & SAS Server',
-      'Analyse': 'R Studio & Posit',
-      'Disseminate': 'Secure Research Service (SRS)',
-      'Evaluate': 'Qualtrics Survey',
-      'Division': 'Social Surveys',
-      'Frequency': 'Biennial'
-    },
-    {
-      'Survey Name': 'Construction Output Survey',
-      'Specify Needs': 'Business Change Board',
-      'Design': 'Visio & Miro',
-      'Build': 'EQ Authoring',
-      'Collect': 'Electronic Questionnaire (EQ)',
-      'Process': 'Python ETL Pipe',
-      'Analyse': 'R Shiny Dashboards',
-      'Disseminate': 'Web Bulletins & Excel',
-      'Evaluate': 'Team Retrospective',
-      'Division': 'Business Statistics',
-      'Frequency': 'Monthly'
-    },
-    {
-      'Survey Name': 'COVID-19 Infection Survey (CIS)',
-      'Specify Needs': 'DHSC Urgent Directive',
-      'Design': 'Rapid Prototyping',
-      'Build': 'EQ Authoring',
-      'Collect': 'EQ & Field Couriers',
-      'Process': 'PySpark & Splink',
-      'Analyse': 'Bayesian Model / Stan',
-      'Disseminate': 'Open Data API',
-      'Evaluate': 'Health Review Council',
-      'Division': 'Health & Life Events',
-      'Frequency': 'Ad-hoc / Rapid'
-    },
-    {
-      'Survey Name': 'Producer Price Index (PPI)',
-      'Specify Needs': 'Economic Strategy Board',
-      'Design': 'Enterprise Architect',
-      'Build': 'Oracle Forms',
-      'Collect': 'Electronic Questionnaire (EQ)',
-      'Process': 'Oracle DB & SQL',
-      'Analyse': 'SAS Analytics',
-      'Disseminate': 'Open Data API',
-      'Evaluate': 'Economic Review Board',
-      'Division': 'Prices & Inflation',
-      'Frequency': 'Monthly'
-    }
-  ],
-  'ONS Survey Portfolio (GSBPM Model)'
+const parsedCsv = Papa.parse(SAMPLE_BUSINESS_SURVEYS_CSV, {
+  header: true,
+  skipEmptyLines: true
+});
+
+const defaultParsed = parseSpreadsheetRows(
+  parsedCsv.data as Record<string, any>[],
+  'Business Survey Platforms'
 );
 
-export const SAMPLE_DATASET_ONS: SankeyDataset = parsedSample.dataset || {
-  name: 'ONS Survey Portfolio (GSBPM Model)',
-  description: 'Flow of ONS statistical surveys across GSBPM stages and platforms.',
+export const SAMPLE_DATASET_ONS: SankeyDataset = defaultParsed.dataset || {
+  name: 'Business Survey Platforms',
+  description: 'Flow of 34 ONS business surveys across GSBPM process phases and platforms.',
   nodes: [],
   links: [],
   surveys: []
 };
 
-export const SAMPLE_CSV_TEMPLATE = SAMPLE_GSBPM_CSV;
+export const SAMPLE_CSV_TEMPLATE = SAMPLE_BUSINESS_SURVEYS_CSV;

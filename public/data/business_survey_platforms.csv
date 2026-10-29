@@ -1,35 +1,35 @@
-﻿Survey Name,Specify Needs,Design,Build,Collect,Process,Analyse,Disseminate,Evaluate,Divison,Frequency
-Monthly Business Survey,Word,IDBR,Author,eQ,SPP,DAP,API,Evaluate,Business Surveys,Monthly
-Quarterly Stocks,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Evaluate,Business Surveys,Quarterly
-Capital Expenditure (CAPEX),Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Evaluate,Business Surveys,Quarterly
-Retail Sales,Word,IDBR,Author,eQ,SPP,DAP,API,Evaluate,Business Surveys,Monthly
-ABS,Word,IDBR,Author,eQ,Common Software,DAP,API,Evaluate,Business Surveys,Annual
-Quarterly Sand & Gravel Land,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Evaluate,Business Surveys,Quarterly
-Monthly Blocks,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Evaluate,Business Surveys,Monthly
-Monthly Bricks,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Evaluate,Business Surveys,Monthly
-Quarterly Sand & Gravel Marine,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Evaluate,Business Surveys,Quarterly
-Monthly Wages and Salaries,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Evaluate,Business Surveys,Monthly
-Quarterly Business Survey,Word,IDBR,Author,eQ,SPP,DAP,API,Evaluate,Business Surveys,Quarterly
-Annual Survey of Hours and Earnings,Word,IDBR,Author,SEFT,SPP,DAP,ONS Website,Evaluate,Business Surveys,Annual
-Local Authority,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Evaluate,Business Surveys,Quarterly
-Public Bodies,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Evaluate,Business Surveys,Quarterly
-Civil Service,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Evaluate,Business Surveys,Quarterly
-Annual Business Spend,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Evaluate,Business Surveys,Annual
-Vacancies Inquiry,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Evaluate,Business Surveys,Monthly
-Construction,Word,IDBR,Author,eQ,SPP,DAP,ONS Website,Evaluate,Business Surveys,Monthly
-BERD,Word,IDBR,Author,eQ,SPP,DAP,API,Evaluate,Business Surveys,Annual
-GERD,Word,IDBR,Author,eQ,FIS,DAP,ONS Website,Evaluate,Business Surveys,Annual
-Digital Economy Survey,Word,IDBR,Paper,Paper,FIS,DAP,ONS Website,Evaluate,Business Surveys,Annual
-FALS,Word,IDBR,Paper,Paper,FIS,DAP,ONS Website,Evaluate,Business Surveys,Annual
-FI,Word,IDBR,Paper,Paper,FIS,DAP,ONS Website,Evaluate,Business Surveys,Annual
-Quarterly Profits,Word,IDBR,Paper,Paper,FIS,DAP,ONS Website,Evaluate,Business Surveys,Quarterly
-Foreign Direct Investment,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Quarterly
-Mergers & Acquisitions,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Annual
-Outward Foreign Affiliates Statistics ,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Annual
-International Trade in Services,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Annual
-Financial Services Survey,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Quarterly
-Purchases,Word,IDBR,Author,eQ,Cora,DAP,ONS Website,Evaluate,Business Surveys,Annual
-Services Turnover Survey,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Biannual
-Private Non-profit,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Annual
-UK Innovation Survey,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Biannual
-Management and Expectations Survey,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Evaluate,Business Surveys,Annual
+Survey Name,Specify Needs,Design,Build,Collect,Process,Analyse,Disseminate,Evaluate,Divison,Frequency
+Monthly Business Survey,Word,IDBR,Author,eQ,SPP,DAP,API,R,Business Surveys,Monthly
+Quarterly Stocks,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Capital Expenditure (CAPEX),Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Retail Sales,Word,IDBR,Author,eQ,SPP,DAP,API,R,Business Surveys,Monthly
+ABS,Word,IDBR,Author,eQ,Common Software,DAP,API,R,Business Surveys,Annual
+Quarterly Sand & Gravel Land,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Excel,Business Surveys,Quarterly
+Monthly Blocks,Word,IDBR,Paper,Paper,Common Software,CORD,ONS Website,Excel,Business Surveys,Monthly
+Monthly Bricks,Word,IDBR,Paper,Paper,Common Software,CORD,ONS Website,Excel,Business Surveys,Monthly
+Quarterly Sand & Gravel Marine,Word,IDBR,Paper,Paper,Common Software,CORD,ONS Website,Excel,Business Surveys,Quarterly
+Monthly Wages and Salaries,Word,IDBR,Paper,Paper,Common Software,DAP,ONS Website,Excel,Business Surveys,Monthly
+Quarterly Business Survey,Word,IDBR,Author,eQ,SPP,DAP,API,Python,Business Surveys,Quarterly
+Annual Survey of Hours and Earnings,Word,IDBR,Author,SEFT,SPP,DAP,ONS Website,Excel,Business Surveys,Annual
+Local Authority,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Public Bodies,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Civil Service,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Quarterly
+Annual Business Spend,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Annual
+Vacancies Inquiry,Word,IDBR,Paper,Paper,Common Software,Common Software,ONS Website,Excel,Business Surveys,Monthly
+Construction,Word,IDBR,Author,eQ,SPP,DAP,ONS Website,Excel,Business Surveys,Monthly
+BERD,Word,IDBR,Author,eQ,SPP,DAP,API,Python,Business Surveys,Annual
+GERD,Word,IDBR,Author,eQ,FIS,DAP,ONS Website,Excel,Business Surveys,Annual
+Digital Economy Survey,Word,IDBR,Paper,Paper,FIS,DAP,ONS Website,Excel,Business Surveys,Annual
+FALS,Word,IDBR,Paper,Paper,FIS,SAS,ONS Website,Excel,Business Surveys,Annual
+FI,Word,IDBR,Paper,Paper,FIS,SAS,ONS Website,Excel,Business Surveys,Annual
+Quarterly Profits,Word,IDBR,Paper,Paper,FIS,SAS,ONS Website,Excel,Business Surveys,Quarterly
+Foreign Direct Investment,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Quarterly
+Mergers & Acquisitions,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Annual
+Outward Foreign Affiliates Statistics ,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Annual
+International Trade in Services,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Annual
+Financial Services Survey,Word,IDBR,Paper,Paper,Cora,SAS,ONS Website,Excel,Business Surveys,Quarterly
+Purchases,Word,IDBR,Author,eQ,Cora,DAP,ONS Website,Excel,Business Surveys,Annual
+Services Turnover Survey,Word,IDBR,Paper,Paper,Cora,DAP,ONS Website,Excel,Business Surveys,Biannual
+Private Non-profit,Word,IDBR,Paper,Paper,Cora,Python,ONS Website,Excel,Business Surveys,Annual
+UK Innovation Survey,Word,IDBR,Paper,Paper,Cora,Python,ONS Website,Excel,Business Surveys,Biannual
+Management and Expectations Survey,Word,IDBR,Paper,Paper,Cora,Python,ONS Website,Excel,Business Surveys,Annual

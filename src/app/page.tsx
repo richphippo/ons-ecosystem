@@ -18,7 +18,6 @@ export default function Home() {
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [minValue, setMinValue] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedElement, setSelectedElement] = useState<SelectedElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -71,11 +70,6 @@ export default function Home() {
     return Array.from(catSet);
   }, [dataset]);
 
-  // Max value among all links for setting slider bounds
-  const maxPossibleValue = useMemo(() => {
-    return dataset.links.reduce((max, l) => Math.max(max, l.value), 0);
-  }, [dataset]);
-
   const allSurveys = useMemo(() => {
     return dataset.surveys || [];
   }, [dataset]);
@@ -85,10 +79,6 @@ export default function Home() {
     const query = searchQuery.trim().toLowerCase();
 
     const links = dataset.links.filter(link => {
-      if (minValue > 0 && link.value < minValue) {
-        return false;
-      }
-
       if (selectedCategory) {
         const linkMatches = link.category === selectedCategory || link.sourceStage === selectedCategory || link.targetStage === selectedCategory;
         const sourceMatches = dataset.nodes.find(n => n.id === link.source)?.stage === selectedCategory;
@@ -120,11 +110,10 @@ export default function Home() {
     const flow = allSurveys.length > 0 ? allSurveys.length : links.reduce((sum, l) => sum + l.value, 0);
 
     return { filteredNodes: nodes, filteredLinks: links, totalFlow: flow };
-  }, [dataset, searchQuery, minValue, selectedCategory, allSurveys]);
+  }, [dataset, searchQuery, selectedCategory, allSurveys]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
-    setMinValue(0);
     setSelectedCategory(null);
     setSelectedElement(null);
   };
@@ -133,7 +122,6 @@ export default function Home() {
     setDataset(newDataset);
     setSelectedElement(null);
     setSearchQuery('');
-    setMinValue(0);
     setSelectedCategory(null);
     if (newDataset.surveys && newDataset.surveys.length > 0) {
       setSelectedSurveyId(newDataset.surveys[0].id);
@@ -204,7 +192,7 @@ export default function Home() {
             </div>
             <div className="p-3.5 bg-white rounded-md border border-[#D0D2D3] shadow-xs">
               <span className="font-bold text-[#003C57] block mb-1">2. All Surveys Sankey Diagram</span>
-              The central diagram aggregates all surveys, showing how statistical operations branch and converge across ONS platforms in each GSBPM phase.
+              The diagram shows all surveys, outlining how the ecosystem of statistical platforms are used to support each GSBPM phase and the quantity of surveys using each end to end path.
             </div>
             <div className="p-3.5 bg-white rounded-md border border-[#D0D2D3] shadow-xs">
               <span className="font-bold text-[#003C57] block mb-1">3. Single Survey Process Flow</span>
@@ -229,9 +217,6 @@ export default function Home() {
           <FilterControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            minValue={minValue}
-            maxPossibleValue={maxPossibleValue}
-            onMinValueChange={setMinValue}
             categories={categories}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
