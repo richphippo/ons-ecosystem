@@ -1,20 +1,17 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Open_Sans } from 'next/font/google';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const openSans = Open_Sans({
+  variable: '--font-open-sans',
   subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'ONS Ecosystem - Sankey Workflow Visualizer',
-  description: 'Interactive spreadsheet-driven Sankey diagram visualizer for workflow, pipelines, and data ecosystems.',
+  title: 'Office for National Statistics | Survey Ecosystem',
+  description: 'Interactive GSBPM workflow and platform visualizer for the Office for National Statistics.',
 };
 
 export default function RootLayout({
@@ -23,11 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
-    >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">{children}</body>
+    <html lang="en" className={`${openSans.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-[#F5F5F5] text-[#222222] font-sans">
+        {children}
+      </body>
     </html>
   );
 }

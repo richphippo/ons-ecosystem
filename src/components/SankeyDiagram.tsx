@@ -84,16 +84,16 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
     return (
       <div
         ref={containerRef}
-        className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-slate-950/60 rounded-2xl border border-slate-800"
+        className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-white rounded-lg border border-[#D0D2D3]"
       >
-        <div className="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mb-4 text-slate-500">
-          <Info className="w-8 h-8" />
+        <div className="w-14 h-14 rounded-full bg-[#EBF2F7] border border-[#206095] flex items-center justify-center mb-3 text-[#206095]">
+          <Info className="w-6 h-6" />
         </div>
-        <h3 className="text-lg font-semibold text-slate-200 mb-1">No Flow Data to Display</h3>
-        <p className="text-sm text-slate-400 max-w-md">
+        <h3 className="text-base font-bold text-[#003C57] mb-1">No Flow Data to Display</h3>
+        <p className="text-sm text-[#595959] max-w-md">
           {nodes.length === 0
             ? 'No platforms or stages match the current filter criteria.'
-            : 'Try adjusting your filter settings or selecting a different survey.'}
+            : 'Try adjusting your filter settings.'}
         </p>
       </div>
     );
@@ -118,7 +118,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative w-full h-full min-h-[550px] bg-slate-950 border border-slate-800/80 rounded-2xl overflow-hidden shadow-2xl select-none"
+      className="relative w-full h-full min-h-[550px] bg-white border border-[#D0D2D3] rounded-lg shadow-sm overflow-hidden select-none"
     >
       <svg
         width={dimensions.width}
@@ -142,8 +142,8 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                 x1={sourceNode.x1}
                 x2={targetNode.x0}
               >
-                <stop offset="0%" stopColor={sourceColor} stopOpacity={0.65} />
-                <stop offset="100%" stopColor={targetColor} stopOpacity={0.65} />
+                <stop offset="0%" stopColor={sourceColor} stopOpacity={0.45} />
+                <stop offset="100%" stopColor={targetColor} stopOpacity={0.45} />
               </linearGradient>
             );
           })}
@@ -176,10 +176,10 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
             const strokeOpacity = isSelected
               ? 0.95
               : isHovered
-              ? 0.85
+              ? 0.8
               : isDimmed
-              ? 0.1
-              : 0.45;
+              ? 0.08
+              : 0.38;
 
             return (
               <path
@@ -187,9 +187,9 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                 d={pathData}
                 fill="none"
                 stroke={`url(#${gradId})`}
-                strokeWidth={Math.max(2, link.width || 1)}
+                strokeWidth={Math.max(2.5, link.width || 1)}
                 strokeOpacity={strokeOpacity}
-                className="cursor-pointer transition-all duration-200"
+                className="cursor-pointer transition-all duration-150"
                 onMouseEnter={e => {
                   setHoveredLinkKey(linkKey);
                   const bounds = containerRef.current?.getBoundingClientRect();
@@ -219,7 +219,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
         <g className="nodes-layer">
           {layout.nodes.map(node => {
             const nodeWidth = (node.x1 || 0) - (node.x0 || 0);
-            const nodeHeight = Math.max(4, (node.y1 || 0) - (node.y0 || 0));
+            const nodeHeight = Math.max(5, (node.y1 || 0) - (node.y0 || 0));
             const nodeColor = getNodeColor(node.name, node.category, node.stage);
 
             const isHovered = hoveredNodeId === node.id;
@@ -241,7 +241,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
               <g
                 key={`node-${node.id}`}
                 transform={`translate(${node.x0}, ${node.y0})`}
-                className="cursor-pointer transition-opacity duration-200"
+                className="cursor-pointer transition-opacity duration-150"
                 opacity={isDimmed ? 0.25 : 1}
                 onMouseEnter={e => {
                   setHoveredNodeId(node.id);
@@ -264,17 +264,17 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                   onSelectElement({ type: 'node', data: node });
                 }}
               >
-                {/* Node Bar */}
+                {/* Node Bar with ONS accessible focus/selected border */}
                 <rect
                   width={nodeWidth}
                   height={nodeHeight}
                   fill={nodeColor}
-                  rx={4}
-                  stroke={isSelected ? '#ffffff' : isHovered ? '#e2e8f0' : 'rgba(0,0,0,0.3)'}
-                  strokeWidth={isSelected ? 2.5 : isHovered ? 2 : 1}
+                  rx={2}
+                  stroke={isSelected ? '#FBC900' : isHovered ? '#003C57' : '#FFFFFF'}
+                  strokeWidth={isSelected ? 3 : isHovered ? 2 : 1}
                   className="transition-all duration-150"
                   style={{
-                    filter: isSelected ? `drop-shadow(0 0 10px ${nodeColor})` : undefined
+                    filter: isSelected ? 'drop-shadow(0 0 6px rgba(251, 201, 0, 0.8))' : undefined
                   }}
                 />
 
@@ -284,7 +284,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                   y={nodeHeight / 2 - 4}
                   dy="0.35em"
                   textAnchor={isLeftAligned ? 'start' : 'end'}
-                  className="text-xs font-semibold fill-slate-100 pointer-events-none drop-shadow-md"
+                  className="text-xs font-bold fill-[#003C57] pointer-events-none"
                 >
                   {node.name}
                 </text>
@@ -295,10 +295,10 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                   y={nodeHeight / 2 + 10}
                   dy="0.35em"
                   textAnchor={isLeftAligned ? 'start' : 'end'}
-                  className="text-[10px] font-mono fill-indigo-300 pointer-events-none"
+                  className="text-[10px] font-mono font-semibold fill-[#595959] pointer-events-none"
                 >
-                  {node.stage ? `[${node.stage}] • ` : ''}
-                  {node.value || 0} {(node.value || 0) === 1 ? 'Survey' : 'Surveys'}
+                  {node.stage ? `${node.stage} • ` : ''}
+                  {node.value || 0} {(node.value || 0) === 1 ? 'survey' : 'surveys'}
                 </text>
               </g>
             );
@@ -306,27 +306,27 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
         </g>
       </svg>
 
-      {/* Floating Dynamic Tooltip */}
+      {/* Floating Dynamic Tooltip with ONS Styling */}
       {tooltip && (
         <div
-          className="pointer-events-none absolute z-50 px-3.5 py-2.5 rounded-xl bg-slate-900/95 border border-slate-700 shadow-2xl backdrop-blur-md text-xs text-slate-100 max-w-sm -translate-x-1/2 -translate-y-full mb-3"
+          className="pointer-events-none absolute z-50 px-3.5 py-2.5 rounded-md bg-white border-2 border-[#003C57] shadow-xl text-xs text-[#222222] max-w-sm -translate-x-1/2 -translate-y-full mb-3"
           style={{
             left: `${tooltip.x}px`,
             top: `${tooltip.y}px`
           }}
         >
-          <div className="font-bold text-white text-sm">{tooltip.title}</div>
-          {tooltip.stage && <div className="text-[11px] text-indigo-400 font-medium mb-1">{tooltip.stage}</div>}
-          <div className="font-mono text-emerald-400 font-semibold mb-1.5">{tooltip.value}</div>
+          <div className="font-bold text-[#003C57] text-sm">{tooltip.title}</div>
+          {tooltip.stage && <div className="text-[11px] text-[#206095] font-semibold mb-1">{tooltip.stage}</div>}
+          <div className="font-mono text-[#0F8243] font-bold mb-1.5">{tooltip.value}</div>
 
           {tooltip.surveys && tooltip.surveys.length > 0 && (
-            <div className="border-t border-slate-800 pt-1.5 mt-1">
-              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">
+            <div className="border-t border-[#D0D2D3] pt-1.5 mt-1">
+              <span className="text-[10px] uppercase tracking-wider text-[#595959] font-bold block mb-1">
                 Surveys Traversing ({tooltip.surveys.length}):
               </span>
               <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
                 {tooltip.surveys.map(s => (
-                  <span key={s} className="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded text-[10px]">
+                  <span key={s} className="bg-[#EBF2F7] text-[#206095] border border-[#BCDCF0] px-1.5 py-0.5 rounded text-[10px] font-medium">
                     {s}
                   </span>
                 ))}

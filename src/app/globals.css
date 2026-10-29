@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ons-night-blue: #003c57;
+  --ons-ocean-blue: #206095;
+  --ons-sky-blue: #27a0cc;
+  --ons-spring-green: #0f8243;
+  --ons-leaf-green: #82bb23;
+  --ons-ruby-red: #d0021b;
+  --ons-jaune: #fbc900;
+  --ons-light-grey: #f5f5f5;
+  --ons-mid-grey: #d0d2d3;
+  --ons-dark-grey: #414042;
+  --ons-black: #222222;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-open-sans), 'Open Sans', Arial, sans-serif;
+  --color-ons-night-blue: var(--ons-night-blue);
+  --color-ons-ocean-blue: var(--ons-ocean-blue);
+  --color-ons-sky-blue: var(--ons-sky-blue);
+  --color-ons-spring-green: var(--ons-spring-green);
+  --color-ons-leaf-green: var(--ons-leaf-green);
+  --color-ons-ruby-red: var(--ons-ruby-red);
+  --color-ons-jaune: var(--ons-jaune);
+  --color-ons-light-grey: var(--ons-light-grey);
+  --color-ons-mid-grey: var(--ons-mid-grey);
+  --color-ons-dark-grey: var(--ons-dark-grey);
+  --color-ons-black: var(--ons-black);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--ons-light-grey);
+  color: var(--ons-black);
+  font-family: var(--font-open-sans), 'Open Sans', Arial, Helvetica, sans-serif;
+}
+
+/* ONS Accessible Focus Style */
+*:focus-visible {
+  outline: 3px solid var(--ons-jaune) !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 2px #000000 !important;
 }

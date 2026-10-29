@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { UploadCloud, Download, AlertCircle, CheckCircle2, FileSpreadsheet } from 'lucide-react';
+import { UploadCloud, Download, AlertCircle, CheckCircle2, RotateCcw } from 'lucide-react';
 import { parseFile } from '@/utils/dataParser';
 import type { SankeyDataset } from '@/types/sankey';
 import { SAMPLE_DATASET_ONS, SAMPLE_CSV_TEMPLATE } from '@/utils/sampleData';
@@ -31,7 +31,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     } else {
       onDatasetChange(result.dataset);
       const surveyCount = result.dataset.surveys?.length || result.dataset.nodes.length;
-      setSuccessNotice(`Successfully loaded "${file.name}" with ${surveyCount} surveys across GSBPM stages.`);
+      setSuccessNotice(`Successfully loaded "${file.name}" (${surveyCount} surveys across GSBPM stages).`);
       setTimeout(() => setSuccessNotice(null), 6000);
     }
   };
@@ -73,7 +73,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg text-slate-100">
+    <div className="bg-white border border-[#D0D2D3] rounded-lg p-4 shadow-sm text-[#222222]">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         {/* Left: Drag and drop or upload button */}
         <div className="flex flex-wrap items-center gap-3">
@@ -90,16 +90,16 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
-            className={`cursor-pointer border-2 border-dashed rounded-lg px-4 py-2.5 transition flex items-center gap-3 ${
+            className={`cursor-pointer border-2 border-dashed rounded-md px-4 py-2.5 transition flex items-center gap-3 ${
               isDragging
-                ? 'border-indigo-400 bg-indigo-950/40 text-indigo-200'
-                : 'border-slate-700 bg-slate-800/60 hover:border-slate-500 hover:bg-slate-800 text-slate-300'
+                ? 'border-[#206095] bg-[#EBF2F7] text-[#206095]'
+                : 'border-[#BCBCBD] bg-[#F8F9FA] hover:border-[#206095] hover:bg-[#F0F4F7] text-[#414042]'
             }`}
           >
-            <UploadCloud className="w-5 h-5 text-indigo-400 animate-pulse" />
+            <UploadCloud className="w-5 h-5 text-[#206095]" />
             <div className="text-sm">
-              <span className="font-semibold text-white">Upload GSBPM Spreadsheet</span>
-              <span className="text-xs text-slate-400 ml-1.5 hidden sm:inline">(CSV or XLSX)</span>
+              <span className="font-bold text-[#003C57]">Upload Spreadsheet</span>
+              <span className="text-xs text-[#595959] ml-1.5 hidden sm:inline">(CSV or XLSX)</span>
             </div>
           </div>
 
@@ -107,21 +107,21 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             type="button"
             onClick={() => {
               onDatasetChange(SAMPLE_DATASET_ONS);
-              setSuccessNotice('Loaded ONS GSBPM Survey Portfolio preset.');
+              setSuccessNotice('Reset to default ONS Survey Portfolio.');
               setTimeout(() => setSuccessNotice(null), 3000);
             }}
-            className="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition flex items-center gap-1.5"
+            className="px-3.5 py-2 text-xs font-semibold rounded-md bg-white hover:bg-[#F0F4F7] border border-[#206095] text-[#206095] transition flex items-center gap-1.5"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Reset to ONS Presets</span>
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset to Default Preset</span>
           </button>
         </div>
 
         {/* Right: Active Dataset Info & Template download */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="text-xs text-right hidden md:block">
-            <div className="text-slate-400">Current Dataset</div>
-            <div className="font-semibold text-slate-200 truncate max-w-[240px]" title={currentDataset.name}>
+            <div className="text-[#595959] uppercase tracking-wider text-[10px] font-semibold">Active Dataset</div>
+            <div className="font-bold text-[#003C57] truncate max-w-[260px]" title={currentDataset.name}>
               {currentDataset.name}
             </div>
           </div>
@@ -129,10 +129,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
           <button
             type="button"
             onClick={downloadSampleTemplate}
-            title="Download GSBPM Survey format template"
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition"
+            title="Download CSV format template"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-md bg-[#0F8243] hover:bg-[#0c6b37] text-white shadow-sm transition"
           >
-            <Download className="w-3.5 h-3.5 text-emerald-400" />
+            <Download className="w-3.5 h-3.5 text-white" />
             <span>Download CSV Template</span>
           </button>
         </div>
@@ -140,16 +140,16 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
       {/* Notifications */}
       {errorMessage && (
-        <div className="mt-3 p-2.5 bg-rose-950/60 border border-rose-800 rounded-lg text-xs text-rose-300 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-          <span>{errorMessage}</span>
+        <div className="mt-3 p-3 bg-[#FDF2F2] border-l-4 border-[#D0021B] rounded-r-md text-xs text-[#D0021B] flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span className="font-semibold">{errorMessage}</span>
         </div>
       )}
 
       {successNotice && (
-        <div className="mt-3 p-2 bg-emerald-950/60 border border-emerald-800 rounded-lg text-xs text-emerald-300 flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{successNotice}</span>
+        <div className="mt-3 p-3 bg-[#F0FDF4] border-l-4 border-[#0F8243] rounded-r-md text-xs text-[#0F8243] flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span className="font-semibold">{successNotice}</span>
         </div>
       )}
     </div>

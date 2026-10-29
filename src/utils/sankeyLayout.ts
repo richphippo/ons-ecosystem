@@ -1,21 +1,27 @@
 import { sankey, sankeyJustify, sankeyLinkHorizontal } from 'd3-sankey';
 import type { BaseLinkData, BaseNodeData, CustomSankeyLink, CustomSankeyNode } from '../types/sankey.ts';
 
-// Color map for the 8 canonical GSBPM phases
+// Official ONS Brand Guidelines & Design System Color Mapping for GSBPM Phases
 export const STAGE_COLOR_MAP: Record<string, string> = {
-  'Specify Needs': '#6366f1', // Indigo
-  'Design': '#8b5cf6',        // Purple
-  'Build': '#ec4899',         // Pink
-  'Collect': '#3b82f6',       // Blue
-  'Process': '#06b6d4',       // Cyan
-  'Analyse': '#10b981',       // Emerald
-  'Disseminate': '#f59e0b',   // Amber
-  'Evaluate': '#f97316'       // Orange
+  'Specify Needs': '#003C57', // ONS Night Blue
+  'Design': '#206095',        // ONS Ocean Blue
+  'Build': '#27A0CC',         // ONS Sky Blue
+  'Collect': '#0F8243',       // ONS Spring Green
+  'Process': '#82BB23',       // ONS Leaf Green
+  'Analyse': '#008080',       // ONS Teal / Petroleum
+  'Disseminate': '#D67B00',   // ONS Warm Amber
+  'Evaluate': '#6E328C'       // ONS Heather / Purple
 };
 
-const FALLBACK_PALETTE = [
-  '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#06b6d4',
-  '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16'
+const ONS_PALETTE = [
+  '#206095', // Ocean Blue
+  '#0F8243', // Spring Green
+  '#27A0CC', // Sky Blue
+  '#82BB23', // Leaf Green
+  '#003C57', // Night Blue
+  '#D67B00', // Amber
+  '#6E328C', // Heather
+  '#D0021B'  // Ruby Red
 ];
 
 export function getNodeColor(nodeName: string, category?: string, stage?: string): string {
@@ -31,8 +37,8 @@ export function getNodeColor(nodeName: string, category?: string, stage?: string
   for (let i = 0; i < key.length; i++) {
     hash = key.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const index = Math.abs(hash) % FALLBACK_PALETTE.length;
-  return FALLBACK_PALETTE[index];
+  const index = Math.abs(hash) % ONS_PALETTE.length;
+  return ONS_PALETTE[index];
 }
 
 /**
@@ -131,7 +137,7 @@ export function computeSankeyLayout(
       .nodeId(d => d.id)
       .nodeAlign(sankeyJustify)
       .nodeWidth(20)
-      .nodePadding(Math.max(10, Math.min(26, height / (nodes.length * 1.2))))
+      .nodePadding(Math.max(12, Math.min(26, height / (nodes.length * 1.2))))
       .extent([
         [24, 24],
         [width - 24, height - 24]
