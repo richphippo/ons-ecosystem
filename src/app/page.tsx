@@ -4,17 +4,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Papa from 'papaparse';
 import { SAMPLE_DATASET_ONS } from '@/utils/sampleData';
 import { parseSpreadsheetRows } from '@/utils/dataParser';
-import type { BaseLinkData, BaseNodeData, SankeyDataset, SelectedElement, ViewMode } from '@/types/sankey';
+import type { BaseLinkData, BaseNodeData, SankeyDataset, SelectedElement } from '@/types/sankey';
 import { FileUploader } from '@/components/FileUploader';
 import { FilterControls } from '@/components/FilterControls';
 import { SankeyDiagram } from '@/components/SankeyDiagram';
 import { DetailsPanel } from '@/components/DetailsPanel';
+import { SingleSurveyFlow } from '@/components/SingleSurveyFlow';
 import { Maximize2, Minimize2, Workflow, HelpCircle, Loader2 } from 'lucide-react';
 
 export default function Home() {
   const [dataset, setDataset] = useState<SankeyDataset>(SAMPLE_DATASET_ONS);
   const [isLoadingDefault, setIsLoadingDefault] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>('all-surveys');
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,41 +80,10 @@ export default function Home() {
     return dataset.surveys || [];
   }, [dataset]);
 
-  const currentSelectedSurvey = useMemo(() => {
-    if (!selectedSurveyId) return allSurveys[0] || null;
-    return allSurveys.find(s => s.id === selectedSurveyId || s.name === selectedSurveyId) || null;
-  }, [allSurveys, selectedSurveyId]);
-
-  // Filtered links and nodes based on user controls and ViewMode
+  // Filtered links and nodes for the main Sankey diagram
   const { filteredNodes, filteredLinks, totalFlow } = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
-    // In Single Survey Mode: isolate only this survey's path
-    if (viewMode === 'single-survey' && currentSelectedSurvey) {
-      const surveyName = currentSelectedSurvey.name;
-
-      const links = dataset.links
-        .filter(l => l.surveys?.includes(surveyName))
-        .map(l => ({ ...l, value: 1 }));
-
-      const activeNodeIds = new Set<string>();
-      links.forEach(l => {
-        activeNodeIds.add(l.source);
-        activeNodeIds.add(l.target);
-      });
-
-      const nodes = dataset.nodes
-        .filter(n => activeNodeIds.has(n.id))
-        .map(n => ({ ...n, totalValue: 1 }));
-
-      return {
-        filteredNodes: nodes,
-        filteredLinks: links,
-        totalFlow: 1
-      };
-    }
-
-    // In All Surveys Mode: apply user search, threshold, and category filters
     const links = dataset.links.filter(link => {
       if (minValue > 0 && link.value < minValue) {
         return false;
@@ -151,7 +120,7 @@ export default function Home() {
     const flow = allSurveys.length > 0 ? allSurveys.length : links.reduce((sum, l) => sum + l.value, 0);
 
     return { filteredNodes: nodes, filteredLinks: links, totalFlow: flow };
-  }, [dataset, viewMode, currentSelectedSurvey, searchQuery, minValue, selectedCategory, allSurveys]);
+  }, [dataset, searchQuery, minValue, selectedCategory, allSurveys]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -173,12 +142,10 @@ export default function Home() {
     }
   };
 
-  const handleSwitchToSurvey = (surveyName: string) => {
+  const handleSelectSurveyByName = (surveyName: string) => {
     const found = allSurveys.find(s => s.name === surveyName || s.id === surveyName);
     if (found) {
       setSelectedSurveyId(found.id);
-      setViewMode('single-survey');
-      setSelectedElement(null);
     }
   };
 
@@ -234,19 +201,19 @@ export default function Home() {
               The app automatically loads <code className="text-indigo-300">Business Survey Platforms.csv</code> on startup. You can upload an updated version anytime above.
             </div>
             <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
-              <span className="font-semibold text-white block mb-1">2. All Surveys vs. Single Survey Flow</span>
-              Toggle between the aggregated <strong>Ecosystem View</strong> (showing all surveys flowing through ONS platforms) and the <strong>Single Survey Process Flow</strong> (isolating one survey&apos;s end-to-end path).
+              <span className="font-semibold text-white block mb-1">2. All Surveys Sankey Diagram</span>
+              The central diagram aggregates all surveys, showing how flows branch and converge across ONS platforms in each GSBPM phase.
             </div>
             <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
-              <span className="font-semibold text-white block mb-1">3. Clickable Platforms &amp; Transitions</span>
-              Click on any platform bar or flow link to inspect the exact list of surveys using that capability, with one-click drilldown into individual survey pathways.
+              <span className="font-semibold text-white block mb-1">3. Single Survey Process Flow (Below)</span>
+              The panel at the bottom isolates any chosen survey from the dropdown, displaying its step-by-step platforms across all 8 GSBPM phases.
             </div>
           </div>
         </div>
       )}
 
       {/* Main Container */}
-      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col gap-5 flex-1">
+      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6 flex-1">
         {/* Above Diagram: File Ingestion & Data Management */}
         <section aria-label="Spreadsheet Upload">
           <FileUploader
@@ -255,14 +222,9 @@ export default function Home() {
           />
         </section>
 
-        {/* Above Diagram: Dynamic Filters & View Mode */}
+        {/* Above Diagram: Dynamic Filters & Metrics */}
         <section aria-label="Workflow Controls">
           <FilterControls
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            surveys={allSurveys}
-            selectedSurveyId={selectedSurveyId}
-            onSelectedSurveyChange={setSelectedSurveyId}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             minValue={minValue}
@@ -291,9 +253,7 @@ export default function Home() {
           <div className="flex items-center justify-between pb-2 text-xs text-slate-400">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-slate-200">
-                {viewMode === 'all-surveys'
-                  ? `ONS Survey Portfolio: ${allSurveys.length} Surveys across GSBPM Process Stages`
-                  : `Single Survey Flow: ${currentSelectedSurvey?.name || 'Selected Survey'}`}
+                ONS Survey Portfolio: {allSurveys.length} Surveys across GSBPM Process Stages
               </span>
             </div>
 
@@ -329,18 +289,26 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Below Diagram: Interactive Details Panel */}
-        {!isExpanded && (
-          <section aria-label="Details and Insights Panel" className="mt-2">
+        {/* Selected Platform / Link Drilldown Panel (when user clicks an element in Sankey) */}
+        {!isExpanded && selectedElement && (
+          <section aria-label="Selected Element Details">
             <DetailsPanel
-              viewMode={viewMode}
-              selectedSurvey={currentSelectedSurvey}
-              onSelectSurvey={handleSwitchToSurvey}
               selectedElement={selectedElement}
               onClearSelection={() => setSelectedElement(null)}
               allNodes={dataset.nodes}
               allLinks={dataset.links}
-              allSurveys={allSurveys}
+              onSelectSurvey={handleSelectSurveyByName}
+            />
+          </section>
+        )}
+
+        {/* Below Diagram: Single Survey Process Flow Component */}
+        {!isExpanded && (
+          <section aria-label="Single Survey Process Flow">
+            <SingleSurveyFlow
+              surveys={allSurveys}
+              selectedSurveyId={selectedSurveyId}
+              onSelectSurvey={setSelectedSurveyId}
             />
           </section>
         )}

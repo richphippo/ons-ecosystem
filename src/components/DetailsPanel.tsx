@@ -5,173 +5,28 @@ import type {
   BaseLinkData,
   BaseNodeData,
   CustomSankeyNode,
-  SelectedElement,
-  SurveyRecord,
-  ViewMode
+  SelectedElement
 } from '@/types/sankey';
-import { ArrowRight, CornerDownRight, X, Sparkles, CheckCircle2, CircleDashed, Users, Layers } from 'lucide-react';
-import { getNodeColor, STAGE_COLOR_MAP } from '@/utils/sankeyLayout';
-import { GSBPM_STAGES } from '@/utils/dataParser';
+import { ArrowRight, X, Users, Sparkles } from 'lucide-react';
+import { getNodeColor } from '@/utils/sankeyLayout';
 
 interface DetailsPanelProps {
-  viewMode: ViewMode;
-  selectedSurvey: SurveyRecord | null;
-  onSelectSurvey: (surveyId: string) => void;
   selectedElement: SelectedElement;
   onClearSelection: () => void;
   allNodes: BaseNodeData[];
   allLinks: BaseLinkData[];
-  allSurveys: SurveyRecord[];
+  onSelectSurvey: (surveyName: string) => void;
 }
 
 export const DetailsPanel: React.FC<DetailsPanelProps> = ({
-  viewMode,
-  selectedSurvey,
-  onSelectSurvey,
   selectedElement,
   onClearSelection,
   allNodes,
   allLinks,
-  allSurveys
+  onSelectSurvey
 }) => {
-  // SINGLE SURVEY MODE VIEW
-  if (viewMode === 'single-survey') {
-    if (!selectedSurvey) {
-      return (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 text-center text-slate-400">
-          Please select a survey from the dropdown above to view its end-to-end GSBPM process flow.
-        </div>
-      );
-    }
-
-    return (
-      <div className="bg-slate-900 border border-indigo-950/80 rounded-xl p-5 shadow-xl space-y-4">
-        {/* Survey Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-slate-800 gap-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                Single Survey Process Flow
-              </span>
-              {selectedSurvey.metadata?.Division && (
-                <span className="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded-full border border-slate-700">
-                  {selectedSurvey.metadata.Division}
-                </span>
-              )}
-              {selectedSurvey.metadata?.Frequency && (
-                <span className="bg-slate-800 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700 font-mono">
-                  {selectedSurvey.metadata.Frequency}
-                </span>
-              )}
-            </div>
-            <h2 className="text-lg font-bold text-white mt-0.5">{selectedSurvey.name}</h2>
-          </div>
-
-          <div className="text-xs text-slate-400">
-            End-to-end platforms across GSBPM phases
-          </div>
-        </div>
-
-        {/* 8-Stage GSBPM Process Journey Timeline */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-2">
-          {GSBPM_STAGES.map((stageName, idx) => {
-            const platformUsed = selectedSurvey.stages[stageName];
-            const stageColor = STAGE_COLOR_MAP[stageName] || '#6366f1';
-
-            return (
-              <div
-                key={stageName}
-                className={`p-3 rounded-xl border flex flex-col justify-between transition-all ${
-                  platformUsed
-                    ? 'bg-slate-950/90 border-slate-800 shadow-md'
-                    : 'bg-slate-950/40 border-slate-900 opacity-60'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span
-                      className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white"
-                      style={{ backgroundColor: stageColor }}
-                    >
-                      {idx + 1}. {stageName}
-                    </span>
-                    {platformUsed ? (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    ) : (
-                      <CircleDashed className="w-3.5 h-3.5 text-slate-600" />
-                    )}
-                  </div>
-
-                  <div className="mt-2 text-xs font-semibold text-slate-100 min-h-[36px] flex items-center">
-                    {platformUsed ? (
-                      platformUsed
-                    ) : (
-                      <span className="text-slate-600 italic text-[11px]">No platform / Skipped</span>
-                    )}
-                  </div>
-                </div>
-
-                {platformUsed && (
-                  <div className="mt-2 pt-2 border-t border-slate-800/80 text-[10px] text-indigo-400 font-mono">
-                    Active Platform
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // ALL SURVEYS ECOSYSTEM VIEW
-
-  // If nothing is selected, show top platforms across GSBPM
   if (!selectedElement) {
-    const topPlatforms = [...allNodes]
-      .sort((a, b) => (b.surveys?.length || b.totalValue || 0) - (a.surveys?.length || a.totalValue || 0))
-      .slice(0, 4);
-
-    return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-400" />
-            <h3 className="text-sm font-semibold text-slate-200">
-              High-Usage Platforms Across GSBPM Process Stages
-            </h3>
-          </div>
-          <span className="text-xs text-slate-400">
-            Click on any platform bar or flow connection above to inspect specific surveys
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {topPlatforms.map((node, idx) => (
-            <div
-              key={`top-${node.id}`}
-              className="bg-slate-950/80 border border-slate-800/80 rounded-lg p-3 hover:border-slate-700 transition"
-            >
-              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1.5">
-                <span className="font-semibold text-indigo-400">{node.stage || 'Process Stage'}</span>
-                <span className="bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded text-[10px]">
-                  Rank #{idx + 1}
-                </span>
-              </div>
-              <div className="text-xs font-bold text-slate-100 truncate mb-2">
-                {node.name}
-              </div>
-              <div className="flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-2">
-                <span>Surveys Supported:</span>
-                <span className="font-mono font-bold text-emerald-400">
-                  {node.surveys?.length || node.totalValue || 0}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // NODE DETAILS (Platform at Stage)
@@ -184,12 +39,12 @@ export const DetailsPanel: React.FC<DetailsPanelProps> = ({
     const outgoingLinks = allLinks.filter(l => l.source === node.id);
 
     return (
-      <div className="bg-slate-900 border border-indigo-900/50 rounded-xl p-5 shadow-2xl animate-in fade-in duration-200">
+      <div className="bg-slate-900 border border-indigo-900/60 rounded-2xl p-5 shadow-2xl animate-in fade-in duration-200 space-y-4">
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-start justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center gap-3">
             <div
-              className="w-4 h-9 rounded-sm shadow-md shrink-0"
+              className="w-4 h-10 rounded-sm shadow-md shrink-0"
               style={{ backgroundColor: nodeColor }}
             />
             <div>
@@ -226,60 +81,67 @@ export const DetailsPanel: React.FC<DetailsPanelProps> = ({
         </div>
 
         {/* Surveys using this platform */}
-        <div className="mt-4">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-2">
-            <Users className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Surveys Supported at this Stage:</span>
+        <div>
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-300 mb-2">
+            <span className="flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Surveys Supported at this Stage (Click to select in process flow below):</span>
+            </span>
+            <span className="text-xs text-indigo-400 font-mono">
+              {surveysUsingNode.length} surveys
+            </span>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-1 bg-slate-950/60 rounded-xl border border-slate-800/80">
             {surveysUsingNode.map(surveyName => (
               <button
                 key={surveyName}
                 type="button"
                 onClick={() => onSelectSurvey(surveyName)}
-                title="Switch to Single Survey flow view for this survey"
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-indigo-950/80 border border-slate-800 hover:border-indigo-600 text-xs text-slate-200 transition"
+                title={`Inspect ${surveyName} process flow`}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-900/60 border border-slate-800 hover:border-indigo-500 text-xs text-slate-200 transition group"
               >
                 <span>{surveyName}</span>
-                <ArrowRight className="w-3 h-3 text-indigo-400" />
+                <ArrowRight className="w-3 h-3 text-indigo-400 group-hover:translate-x-0.5 transition-transform" />
               </button>
             ))}
           </div>
         </div>
 
         {/* Upstream & Downstream Transitions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-800/80">
-          <div className="bg-slate-950/60 rounded-lg p-3 border border-slate-800">
-            <div className="text-xs font-semibold text-slate-300 mb-1.5">
-              Upstream Inflows ({incomingLinks.length})
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div className="bg-slate-950/80 rounded-xl p-3 border border-slate-800">
+            <div className="text-xs font-semibold text-slate-300 mb-1.5 flex justify-between">
+              <span>Upstream Inflows</span>
+              <span className="font-mono text-slate-400">{incomingLinks.length}</span>
             </div>
             {incomingLinks.length === 0 ? (
               <span className="text-xs text-slate-500 italic">Entry stage in process</span>
             ) : (
-              <div className="space-y-1">
+              <div className="space-y-1.5 max-h-32 overflow-y-auto">
                 {incomingLinks.map((l, i) => (
-                  <div key={i} className="text-xs text-slate-300 flex justify-between">
-                    <span>{l.source}</span>
-                    <span className="font-mono text-emerald-400">{l.value} surveys</span>
+                  <div key={i} className="text-xs text-slate-300 flex justify-between bg-slate-900 px-2 py-1 rounded border border-slate-800">
+                    <span className="truncate max-w-[70%]">{l.source}</span>
+                    <span className="font-mono text-emerald-400 shrink-0">{l.value} surveys</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="bg-slate-950/60 rounded-lg p-3 border border-slate-800">
-            <div className="text-xs font-semibold text-slate-300 mb-1.5">
-              Downstream Outflows ({outgoingLinks.length})
+          <div className="bg-slate-950/80 rounded-xl p-3 border border-slate-800">
+            <div className="text-xs font-semibold text-slate-300 mb-1.5 flex justify-between">
+              <span>Downstream Outflows</span>
+              <span className="font-mono text-slate-400">{outgoingLinks.length}</span>
             </div>
             {outgoingLinks.length === 0 ? (
               <span className="text-xs text-slate-500 italic">Final stage in process</span>
             ) : (
-              <div className="space-y-1">
+              <div className="space-y-1.5 max-h-32 overflow-y-auto">
                 {outgoingLinks.map((l, i) => (
-                  <div key={i} className="text-xs text-slate-300 flex justify-between">
-                    <span>{l.target}</span>
-                    <span className="font-mono text-cyan-400">{l.value} surveys</span>
+                  <div key={i} className="text-xs text-slate-300 flex justify-between bg-slate-900 px-2 py-1 rounded border border-slate-800">
+                    <span className="truncate max-w-[70%]">{l.target}</span>
+                    <span className="font-mono text-cyan-400 shrink-0">{l.value} surveys</span>
                   </div>
                 ))}
               </div>
@@ -299,9 +161,9 @@ export const DetailsPanel: React.FC<DetailsPanelProps> = ({
   const surveysTraversing = link.surveys || [];
 
   return (
-    <div className="bg-slate-900 border border-indigo-900/50 rounded-xl p-5 shadow-2xl animate-in fade-in duration-200">
+    <div className="bg-slate-900 border border-indigo-900/60 rounded-2xl p-5 shadow-2xl animate-in fade-in duration-200 space-y-4">
       {/* Header */}
-      <div className="flex items-start justify-between pb-4 border-b border-slate-800">
+      <div className="flex items-start justify-between pb-3 border-b border-slate-800">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
             Process Transition Flow
@@ -342,23 +204,28 @@ export const DetailsPanel: React.FC<DetailsPanelProps> = ({
       </div>
 
       {/* Surveys on this link */}
-      <div className="mt-4">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-2">
-          <Users className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Surveys Traversing this Step:</span>
+      <div>
+        <div className="flex items-center justify-between text-xs font-semibold text-slate-300 mb-2">
+          <span className="flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Surveys Traversing this Step (Click to select in process flow below):</span>
+          </span>
+          <span className="text-xs text-indigo-400 font-mono">
+            {surveysTraversing.length} surveys
+          </span>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-1 bg-slate-950/60 rounded-xl border border-slate-800/80">
           {surveysTraversing.map(surveyName => (
             <button
               key={surveyName}
               type="button"
               onClick={() => onSelectSurvey(surveyName)}
-              title="Switch to Single Survey flow view for this survey"
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-indigo-950/80 border border-slate-800 hover:border-indigo-600 text-xs text-slate-200 transition"
+              title={`Inspect ${surveyName} process flow`}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-900/60 border border-slate-800 hover:border-indigo-500 text-xs text-slate-200 transition group"
             >
               <span>{surveyName}</span>
-              <ArrowRight className="w-3 h-3 text-indigo-400" />
+              <ArrowRight className="w-3 h-3 text-indigo-400 group-hover:translate-x-0.5 transition-transform" />
             </button>
           ))}
         </div>
