@@ -34,7 +34,7 @@ const SURVEY_NAME_KEYWORDS = [
  * Normalizes text for matching column names against GSBPM stages
  */
 function cleanString(str: string): string {
-  return str.trim().toLowerCase().replace(/[_\-\s0-9.]+/g, '');
+  return str.replace(/\u00a0/g, ' ').trim().toLowerCase().replace(/[_\-\s0-9.]+/g, '');
 }
 
 /**

@@ -1,22 +1,21 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import Papa from 'papaparse';
 import { SAMPLE_DATASET_ONS } from '@/utils/sampleData';
+import { parseSpreadsheetRows } from '@/utils/dataParser';
 import type { BaseLinkData, BaseNodeData, SankeyDataset, SelectedElement, ViewMode } from '@/types/sankey';
 import { FileUploader } from '@/components/FileUploader';
 import { FilterControls } from '@/components/FilterControls';
 import { SankeyDiagram } from '@/components/SankeyDiagram';
 import { DetailsPanel } from '@/components/DetailsPanel';
-import { Maximize2, Minimize2, Workflow, HelpCircle, FileText } from 'lucide-react';
+import { Maximize2, Minimize2, Workflow, HelpCircle, Loader2 } from 'lucide-react';
 
 export default function Home() {
   const [dataset, setDataset] = useState<SankeyDataset>(SAMPLE_DATASET_ONS);
+  const [isLoadingDefault, setIsLoadingDefault] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('all-surveys');
-  const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(
-    SAMPLE_DATASET_ONS.surveys && SAMPLE_DATASET_ONS.surveys.length > 0
-      ? SAMPLE_DATASET_ONS.surveys[0].id
-      : null
-  );
+  const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [minValue, setMinValue] = useState(0);
@@ -24,6 +23,43 @@ export default function Home() {
   const [selectedElement, setSelectedElement] = useState<SelectedElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+
+  // Automatically fetch and load 'Business Survey Platforms.csv' on page load
+  useEffect(() => {
+    async function loadDefaultDataset() {
+      try {
+        const response = await fetch('/data/business_survey_platforms.csv');
+        if (response.ok) {
+          const csvText = await response.text();
+          Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            complete: results => {
+              const parsed = parseSpreadsheetRows(
+                results.data as Record<string, any>[],
+                'Business Survey Platforms'
+              );
+              if (parsed.dataset) {
+                setDataset(parsed.dataset);
+                if (parsed.dataset.surveys && parsed.dataset.surveys.length > 0) {
+                  setSelectedSurveyId(parsed.dataset.surveys[0].id);
+                }
+              }
+              setIsLoadingDefault(false);
+            },
+            error: () => setIsLoadingDefault(false)
+          });
+        } else {
+          setIsLoadingDefault(false);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch initial dataset:', err);
+        setIsLoadingDefault(false);
+      }
+    }
+
+    loadDefaultDataset();
+  }, []);
 
   // Extract all unique GSBPM categories/stages present in the dataset
   const categories = useMemo(() => {
@@ -163,6 +199,12 @@ export default function Home() {
                 <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                   GSBPM Architecture
                 </span>
+                {isLoadingDefault && (
+                  <span className="flex items-center gap-1 text-[11px] text-indigo-400">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <span>Loading default dataset...</span>
+                  </span>
+                )}
               </div>
               <p className="text-xs text-slate-400 hidden sm:block">
                 Modeling ONS statistical surveys and platforms across GSBPM process phases
@@ -188,8 +230,8 @@ export default function Home() {
         <div className="bg-slate-900 border-b border-slate-800 px-4 py-4 animate-in slide-in-from-top-2 duration-150">
           <div className="max-w-7xl mx-auto text-xs text-slate-300 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
-              <span className="font-semibold text-white block mb-1">1. GSBPM Survey Matrix Format</span>
-              Upload a spreadsheet where each row is an ONS Survey and columns correspond to GSBPM process stages (<code className="text-indigo-300">Specify Needs</code>, <code className="text-indigo-300">Collect</code>, <code className="text-indigo-300">Process</code>, etc.). Cell values name the platform used.
+              <span className="font-semibold text-white block mb-1">1. Default Business Survey Platforms</span>
+              The app automatically loads <code className="text-indigo-300">Business Survey Platforms.csv</code> on startup. You can upload an updated version anytime above.
             </div>
             <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
               <span className="font-semibold text-white block mb-1">2. All Surveys vs. Single Survey Flow</span>
