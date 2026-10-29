@@ -1,14 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Search, SlidersHorizontal, RotateCcw, Activity, Layers, GitFork } from 'lucide-react';
+import { Search, RotateCcw, Activity, Layers, GitFork } from 'lucide-react';
 
 interface FilterControlsProps {
   searchQuery: string;
   onSearchChange: (q: string) => void;
-  minValue: number;
-  maxPossibleValue: number;
-  onMinValueChange: (v: number) => void;
   categories: string[];
   selectedCategory: string | null;
   onCategoryChange: (cat: string | null) => void;
@@ -23,9 +20,6 @@ interface FilterControlsProps {
 export const FilterControls: React.FC<FilterControlsProps> = ({
   searchQuery,
   onSearchChange,
-  minValue,
-  maxPossibleValue,
-  onMinValueChange,
   categories,
   selectedCategory,
   onCategoryChange,
@@ -36,14 +30,14 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
   visibleLinkCount,
   totalLinkCount
 }) => {
-  const isFiltered = searchQuery !== '' || minValue > 0 || selectedCategory !== null;
+  const isFiltered = searchQuery !== '' || selectedCategory !== null;
 
   return (
     <div className="bg-white border border-[#D0D2D3] rounded-lg p-4 shadow-sm text-[#222222] space-y-3">
-      {/* Filters row: Search, GSBPM Stage, and Min Surveys Slider */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+      {/* Filters row: Compact left-aligned Search, GSBPM Stage, and Reset */}
+      <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
-        <div className="md:col-span-4 relative">
+        <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#595959]" />
           <input
             type="text"
@@ -56,7 +50,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
 
         {/* GSBPM Stage filter */}
         {categories.length > 0 && (
-          <div className="md:col-span-3">
+          <div className="w-full sm:w-60">
             <select
               value={selectedCategory || ''}
               onChange={e => onCategoryChange(e.target.value === '' ? null : e.target.value)}
@@ -72,41 +66,20 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           </div>
         )}
 
-        {/* Min threshold slider */}
-        <div className="md:col-span-4 flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-[#414042] font-semibold shrink-0">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-[#206095]" />
-            <span>Min Surveys:</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={Math.max(3, maxPossibleValue)}
-            value={minValue}
-            onChange={e => onMinValueChange(Number(e.target.value))}
-            className="w-full h-1.5 bg-[#E8EDEE] rounded-lg appearance-none cursor-pointer accent-[#206095]"
-          />
-          <span className="text-xs font-mono font-bold text-[#003C57] w-8 text-right shrink-0">
-            {minValue}
-          </span>
-        </div>
-
         {/* Reset button */}
-        <div className="md:col-span-1 flex justify-end">
-          <button
-            type="button"
-            disabled={!isFiltered}
-            onClick={onReset}
-            title="Reset filters"
-            className={`p-2 rounded-md border transition flex items-center justify-center ${
-              isFiltered
-                ? 'border-[#206095] bg-[#EBF2F7] text-[#206095] hover:bg-[#D4E4F0]'
-                : 'border-[#E8EDEE] bg-[#F5F5F5] text-[#BCBCBD] cursor-not-allowed'
-            }`}
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+        <button
+          type="button"
+          disabled={!isFiltered}
+          onClick={onReset}
+          title="Reset filters"
+          className={`p-2 rounded-md border transition flex items-center justify-center ${
+            isFiltered
+              ? 'border-[#206095] bg-[#EBF2F7] text-[#206095] hover:bg-[#D4E4F0]'
+              : 'border-[#E8EDEE] bg-[#F5F5F5] text-[#BCBCBD] cursor-not-allowed'
+          }`}
+        >
+          <RotateCcw className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Live Metrics Badges */}
