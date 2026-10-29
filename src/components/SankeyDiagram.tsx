@@ -18,6 +18,7 @@ interface SankeyDiagramProps {
   selectedElement: SelectedElement;
   onSelectElement: (element: SelectedElement) => void;
   valueUnitName?: string;
+  showTooltip?: boolean;
 }
 
 export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
@@ -25,7 +26,8 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
   links,
   selectedElement,
   onSelectElement,
-  valueUnitName = 'Surveys'
+  valueUnitName = 'Surveys',
+  showTooltip = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(1050);
@@ -150,7 +152,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (tooltip && containerRef.current) {
+    if (showTooltip && tooltip && containerRef.current) {
       const bounds = containerRef.current.getBoundingClientRect();
       const scrollLeft = containerRef.current.scrollLeft || 0;
       setTooltip(prev =>
@@ -307,20 +309,24 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                   className="cursor-pointer transition-all duration-150"
                   onMouseEnter={e => {
                     setHoveredLinkKey(linkKey);
-                    const bounds = containerRef.current?.getBoundingClientRect();
-                    const scrollLeft = containerRef.current?.scrollLeft || 0;
-                    setTooltip({
-                      x: e.clientX - (bounds?.left || 0) + scrollLeft,
-                      y: e.clientY - (bounds?.top || 0) - 20,
-                      title: `${sourceNode.name} → ${targetNode.name}`,
-                      stage: `${sourceNode.stage || 'Source'} → ${targetNode.stage || 'Target'}`,
-                      value: `${link.value} ${link.value === 1 ? 'Survey' : 'Surveys'}`,
-                      surveys: link.surveys
-                    });
+                    if (showTooltip) {
+                      const bounds = containerRef.current?.getBoundingClientRect();
+                      const scrollLeft = containerRef.current?.scrollLeft || 0;
+                      setTooltip({
+                        x: e.clientX - (bounds?.left || 0) + scrollLeft,
+                        y: e.clientY - (bounds?.top || 0) - 20,
+                        title: `${sourceNode.name} → ${targetNode.name}`,
+                        stage: `${sourceNode.stage || 'Source'} → ${targetNode.stage || 'Target'}`,
+                        value: `${link.value} ${link.value === 1 ? 'Survey' : 'Surveys'}`,
+                        surveys: link.surveys
+                      });
+                    }
                   }}
                   onMouseLeave={() => {
                     setHoveredLinkKey(null);
-                    setTooltip(null);
+                    if (showTooltip) {
+                      setTooltip(null);
+                    }
                   }}
                   onClick={e => {
                     e.stopPropagation();
@@ -361,20 +367,24 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                   opacity={isDimmed ? 0.25 : 1}
                   onMouseEnter={e => {
                     setHoveredNodeId(node.id);
-                    const bounds = containerRef.current?.getBoundingClientRect();
-                    const scrollLeft = containerRef.current?.scrollLeft || 0;
-                    setTooltip({
-                      x: e.clientX - (bounds?.left || 0) + scrollLeft,
-                      y: e.clientY - (bounds?.top || 0) - 20,
-                      title: node.name,
-                      stage: node.stage ? `GSBPM Phase: ${node.stage}` : undefined,
-                      value: `${node.value || 0} ${(node.value || 0) === 1 ? 'Survey' : 'Surveys'}`,
-                      surveys: node.surveys
-                    });
+                    if (showTooltip) {
+                      const bounds = containerRef.current?.getBoundingClientRect();
+                      const scrollLeft = containerRef.current?.scrollLeft || 0;
+                      setTooltip({
+                        x: e.clientX - (bounds?.left || 0) + scrollLeft,
+                        y: e.clientY - (bounds?.top || 0) - 20,
+                        title: node.name,
+                        stage: node.stage ? `GSBPM Phase: ${node.stage}` : undefined,
+                        value: `${node.value || 0} ${(node.value || 0) === 1 ? 'Survey' : 'Surveys'}`,
+                        surveys: node.surveys
+                      });
+                    }
                   }}
                   onMouseLeave={() => {
                     setHoveredNodeId(null);
-                    setTooltip(null);
+                    if (showTooltip) {
+                      setTooltip(null);
+                    }
                   }}
                   onClick={e => {
                     e.stopPropagation();
@@ -424,7 +434,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
         </svg>
 
         {/* Floating Dynamic Tooltip with ONS Styling */}
-        {tooltip && (
+        {showTooltip && tooltip && (
           <div
             className="pointer-events-none absolute z-50 px-3.5 py-2.5 rounded-md bg-white border-2 border-[#003C57] shadow-xl text-xs text-[#222222] max-w-sm -translate-x-1/2 -translate-y-full mb-3"
             style={{
