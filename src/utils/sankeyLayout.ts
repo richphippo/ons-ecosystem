@@ -164,3 +164,150 @@ export function computeSankeyLayout(
 }
 
 export const getLinkPath = sankeyLinkHorizontal();
+
+export interface ActiveStreamResult {
+  nodeIds: Set<string>;
+  linkKeys: Set<string>;
+}
+
+/**
+ * Computes all nodes and links belonging to the individual streams that flow through
+ * a selected or hovered node/link from the start of the diagram to the end.
+ *
+ * Prioritizes survey-based journey tracking when survey metadata is available,
+ * and falls back to complete topological graph reachability (upstream ancestors + downstream descendants).
+ */
+export function getActiveStreamElements(
+  target: { nodeId?: string | null; link?: BaseLinkData | null } | null,
+  nodes: BaseNodeData[],
+  links: (BaseLinkData & { source: any; target: any })[]
+): ActiveStreamResult | null {
+  if (!target || (!target.nodeId && !target.link)) {
+    return null;
+  }
+
+  const getSourceId = (l: any) =>
+    typeof l.source === 'object' && l.source !== null ? l.source.id : String(l.source);
+  const getTargetId = (l: any) =>
+    typeof l.target === 'object' && l.target !== null ? l.target.id : String(l.target);
+
+  if (target.nodeId) {
+    const activeNode = nodes.find(n => n.id === target.nodeId);
+    if (!activeNode) return null;
+
+    // Survey-based journey tracing (full end-to-end paths of all surveys touching this node)
+    if (activeNode.surveys && activeNode.surveys.length > 0) {
+      const surveySet = new Set(activeNode.surveys);
+      const nodeIds = new Set<string>();
+      const linkKeys = new Set<string>();
+
+      nodes.forEach(n => {
+        if (n.id === activeNode.id || (n.surveys && n.surveys.some(s => surveySet.has(s)))) {
+          nodeIds.add(n.id);
+        }
+      });
+
+      links.forEach(l => {
+        const sId = getSourceId(l);
+        const tId = getTargetId(l);
+        if (l.surveys && l.surveys.some(s => surveySet.has(s))) {
+          linkKeys.add(`${sId}__to__${tId}`);
+          nodeIds.add(sId);
+          nodeIds.add(tId);
+        }
+      });
+
+      return { nodeIds, linkKeys };
+    }
+
+    // Topological reachability fallback (DAG ancestor & descendant traversal)
+    const nodeIds = new Set<string>([activeNode.id]);
+    const linkKeys = new Set<string>();
+
+    const incoming = new Map<string, Array<{ sourceId: string; key: string }>>();
+    const outgoing = new Map<string, Array<{ targetId: string; key: string }>>();
+
+    links.forEach(l => {
+      const sId = getSourceId(l);
+      const tId = getTargetId(l);
+      const key = `${sId}__to__${tId}`;
+
+      if (!outgoing.has(sId)) outgoing.set(sId, []);
+      outgoing.get(sId)!.push({ targetId: tId, key });
+
+      if (!incoming.has(tId)) incoming.set(tId, []);
+      incoming.get(tId)!.push({ sourceId: sId, key });
+    });
+
+    // Upstream traversal (ancestors)
+    const upQueue = [activeNode.id];
+    const visitedUp = new Set<string>([activeNode.id]);
+    while (upQueue.length > 0) {
+      const curr = upQueue.shift()!;
+      const inEdges = incoming.get(curr) || [];
+      for (const edge of inEdges) {
+        linkKeys.add(edge.key);
+        nodeIds.add(edge.sourceId);
+        if (!visitedUp.has(edge.sourceId)) {
+          visitedUp.add(edge.sourceId);
+          upQueue.push(edge.sourceId);
+        }
+      }
+    }
+
+    // Downstream traversal (descendants)
+    const downQueue = [activeNode.id];
+    const visitedDown = new Set<string>([activeNode.id]);
+    while (downQueue.length > 0) {
+      const curr = downQueue.shift()!;
+      const outEdges = outgoing.get(curr) || [];
+      for (const edge of outEdges) {
+        linkKeys.add(edge.key);
+        nodeIds.add(edge.targetId);
+        if (!visitedDown.has(edge.targetId)) {
+          visitedDown.add(edge.targetId);
+          downQueue.push(edge.targetId);
+        }
+      }
+    }
+
+    return { nodeIds, linkKeys };
+  }
+
+  if (target.link) {
+    const sId = getSourceId(target.link);
+    const tId = getTargetId(target.link);
+    const linkKey = `${sId}__to__${tId}`;
+
+    if (target.link.surveys && target.link.surveys.length > 0) {
+      const surveySet = new Set(target.link.surveys);
+      const nodeIds = new Set<string>();
+      const linkKeys = new Set<string>();
+
+      nodes.forEach(n => {
+        if (n.surveys && n.surveys.some(s => surveySet.has(s))) {
+          nodeIds.add(n.id);
+        }
+      });
+
+      links.forEach(l => {
+        const s = getSourceId(l);
+        const t = getTargetId(l);
+        if (l.surveys && l.surveys.some(s => surveySet.has(s))) {
+          linkKeys.add(`${s}__to__${t}`);
+          nodeIds.add(s);
+          nodeIds.add(t);
+        }
+      });
+
+      return { nodeIds, linkKeys };
+    }
+
+    return {
+      nodeIds: new Set<string>([sId, tId]),
+      linkKeys: new Set<string>([linkKey])
+    };
+  }
+
+  return null;
+}
