@@ -8,7 +8,13 @@ import type {
   CustomSankeyNode,
   SelectedElement
 } from '@/types/sankey';
-import { computeSankeyLayout, getLinkPath, getNodeColor, STAGE_COLOR_MAP } from '@/utils/sankeyLayout';
+import {
+  computeSankeyLayout,
+  getActiveStreamElements,
+  getLinkPath,
+  getNodeColor,
+  STAGE_COLOR_MAP
+} from '@/utils/sankeyLayout';
 import { GSBPM_STAGES } from '@/utils/dataParser';
 import { Info } from 'lucide-react';
 
@@ -117,20 +123,21 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
       .sort((a, b) => a.stageIndex - b.stageIndex);
   }, [layout]);
 
-  // Compute connected nodes and links for highlight effects
-  const activeNodeId = hoveredNodeId || (selectedElement?.type === 'node' ? selectedElement.data.id : null);
-  const activeLink = selectedElement?.type === 'link' ? selectedElement.data : null;
+  // Compute connected nodes and links for full end-to-end stream highlight effects
+  const activeStream = useMemo(() => {
+    if (!layout) return null;
 
-  const connectedLinkKeys = useMemo(() => {
-    if (!activeNodeId) return null;
-    const keys = new Set<string>();
-    links.forEach(l => {
-      if (l.source === activeNodeId || l.target === activeNodeId) {
-        keys.add(`${l.source}__to__${l.target}`);
-      }
-    });
-    return keys;
-  }, [activeNodeId, links]);
+    const targetNodeId = hoveredNodeId || (selectedElement?.type === 'node' ? selectedElement.data.id : null);
+    const targetLink = !hoveredNodeId && selectedElement?.type === 'link' ? selectedElement.data : null;
+
+    if (!targetNodeId && !targetLink) return null;
+
+    return getActiveStreamElements(
+      { nodeId: targetNodeId, link: targetLink },
+      layout.nodes,
+      layout.links as any
+    );
+  }, [hoveredNodeId, selectedElement, layout]);
 
   if (!layout || layout.nodes.length === 0 || layout.links.length === 0) {
     return (
@@ -180,6 +187,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
           viewBox={`0 0 ${effectiveWidth} ${containerHeight}`}
           className="block"
           style={{ overflow: 'visible' }}
+          onClick={() => onSelectElement(null)}
         >
           <defs>
             {layout.links.map((link, idx) => {
@@ -282,20 +290,21 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                 (selectedElement.data.target as CustomSankeyNode).id === targetNode.id;
 
               let isDimmed = false;
-              if (activeNodeId) {
-                isDimmed = !connectedLinkKeys?.has(linkKey);
-              } else if (activeLink) {
-                const activeSource = (activeLink.source as CustomSankeyNode).id;
-                const activeTarget = (activeLink.target as CustomSankeyNode).id;
-                isDimmed = !(activeSource === sourceNode.id && activeTarget === targetNode.id);
+              let isInActiveStream = false;
+
+              if (activeStream) {
+                isInActiveStream = activeStream.linkKeys.has(linkKey);
+                isDimmed = !isInActiveStream;
               }
 
               const strokeOpacity = isSelected
                 ? 0.95
                 : isHovered
-                ? 0.8
+                ? 0.85
+                : isInActiveStream
+                ? 0.7
                 : isDimmed
-                ? 0.08
+                ? 0.06
                 : 0.38;
 
               return (
@@ -348,13 +357,11 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
               const isSelected = selectedElement?.type === 'node' && selectedElement.data.id === node.id;
 
               let isDimmed = false;
-              if (hoveredNodeId && hoveredNodeId !== node.id) {
-                const isDirectlyConnected = layout.links.some(l => {
-                  const s = (l.source as CustomSankeyNode).id;
-                  const t = (l.target as CustomSankeyNode).id;
-                  return (s === hoveredNodeId && t === node.id) || (t === hoveredNodeId && s === node.id);
-                });
-                isDimmed = !isDirectlyConnected;
+              let isInActiveStream = false;
+
+              if (activeStream) {
+                isInActiveStream = activeStream.nodeIds.has(node.id);
+                isDimmed = !isInActiveStream;
               }
 
               const isLeftAligned = (node.x0 || 0) < effectiveWidth / 2;
@@ -364,7 +371,7 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                   key={`node-${node.id}`}
                   transform={`translate(${node.x0}, ${node.y0})`}
                   className="cursor-pointer transition-opacity duration-150"
-                  opacity={isDimmed ? 0.25 : 1}
+                  opacity={isDimmed ? 0.2 : 1}
                   onMouseEnter={e => {
                     setHoveredNodeId(node.id);
                     if (showTooltip) {
@@ -397,8 +404,16 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
                     height={nodeHeight}
                     fill={nodeColor}
                     rx={2}
-                    stroke={isSelected ? '#FBC900' : isHovered ? '#003C57' : '#FFFFFF'}
-                    strokeWidth={isSelected ? 3 : isHovered ? 2 : 1}
+                    stroke={
+                      isSelected
+                        ? '#FBC900'
+                        : isHovered
+                        ? '#003C57'
+                        : isInActiveStream && activeStream
+                        ? '#206095'
+                        : '#FFFFFF'
+                    }
+                    strokeWidth={isSelected ? 3 : isHovered ? 2 : isInActiveStream && activeStream ? 1.5 : 1}
                     className="transition-all duration-150"
                     style={{
                       filter: isSelected ? 'drop-shadow(0 0 6px rgba(251, 201, 0, 0.8))' : undefined
@@ -462,12 +477,6 @@ export const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
             )}
           </div>
         )}
-
-        {/* Background click to dismiss selection */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          onClick={() => onSelectElement(null)}
-        />
       </div>
     </div>
   );
